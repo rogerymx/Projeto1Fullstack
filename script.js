@@ -14,6 +14,8 @@ function listarTodos() {
         let usuarios = JSON.parse(requisicao.responseText);
         exibirUsuarios(usuarios.data);
       }
+    } else {
+      exibirMensagem("Erro ao requisitar a API");
     }
   };
   requisicao.send();
