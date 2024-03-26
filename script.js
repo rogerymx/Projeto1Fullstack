@@ -2,17 +2,20 @@ let botaoBuscar = document.getElementById("botaoBuscar");
 let campoBusca = document.getElementById("campoBusca");
 let listaUsuarios = document.getElementById("listaUsuarios");
 let mensagemExibicao = document.getElementById("mensagemExibicao");
+let usuariosData;
 
-window.onload = listarTodos();
+window.onload = listarTodos;
 
 function listarTodos() {
   let requisicao = new XMLHttpRequest();
-  requisicao.open("GET", "https://reqres.in/api/users?page=1", true);
+  requisicao.open("GET", "https://dummyjson.com/users", true);
   requisicao.onreadystatechange = function () {
     if (requisicao.readyState === 4) {
       if (requisicao.status === 200) {
-        let usuarios = JSON.parse(requisicao.responseText);
-        exibirUsuarios(usuarios.data);
+        usuariosData = JSON.parse(requisicao.responseText).users;
+        exibirUsuarios(usuariosData);
+      } else {
+        exibirMensagem("Erro ao conectar a API");
       }
     }
   };
@@ -27,43 +30,44 @@ botaoBuscar.addEventListener("click", function () {
     return;
   }
 
-  let requisicao = new XMLHttpRequest();
-  requisicao.open("GET", "https://reqres.in/api/users?page=1", true);
-  requisicao.onreadystatechange = function () {
-    if (requisicao.readyState === 4) {
-      if (requisicao.status === 200) {
-        let usuarios = JSON.parse(requisicao.responseText);
-        let usuariosFiltrados = filtrarUsuarios(
-          usuarios.data,
-          campoBusca.value.trim()
-        );
-        if (usuariosFiltrados.length > 0) {
-          exibirUsuarios(usuariosFiltrados);
-          exibirMensagem("Usuário(s) encontrado(s).");
-        } else {
-          listaUsuarios.innerHTML = "";
-          exibirMensagem("Nenhum usuário encontrado.");
-        }
-      } else {
-        exibirMensagem("Erro ao buscar usuários.");
-      }
-    }
-  };
-
-  requisicao.send();
+  let usuariosFiltrados = filtrarUsuarios(usuariosData, nomeParaBuscar);
+  if (usuariosFiltrados.length > 0) {
+    exibirUsuarios(usuariosFiltrados);
+    exibirMensagem("Usuário(s) encontrado(s).");
+  } else {
+    listaUsuarios.innerHTML = "";
+    exibirMensagem("Nenhum usuário encontrado.");
+  }
 });
 
-function filtrarUsuarios(usuarios, valorBusca) {
-  return usuarios.filter((usuario) =>
-    usuario.first_name.toLowerCase().includes(valorBusca.toLowerCase())
-  );
+function filtrarUsuarios(usuarios, letraParaBuscar) {
+  return usuarios.filter((usuario) => {
+    let nomeCompleto = `${usuario.firstName} ${usuario.lastName}`.toLowerCase();
+    return nomeCompleto.startsWith(letraParaBuscar.toLowerCase());
+  });
 }
 
 function exibirUsuarios(usuarios) {
   listaUsuarios.innerHTML = "";
   usuarios.forEach((usuario) => {
     let divUsuario = document.createElement("div");
-    divUsuario.textContent = `ID: ${usuario.id}, Nome: ${usuario.first_name} ${usuario.last_name}, Email: ${usuario.email}`;
+    divUsuario.classList.add("user-container");
+
+    let imagem = document.createElement("img");
+    imagem.src = usuario.image;
+    imagem.alt = `${usuario.firstName} ${usuario.lastName}`;
+    divUsuario.appendChild(imagem);
+
+    let nomeUsuario = document.createElement("p");
+    nomeUsuario.textContent = `Nome: ${usuario.firstName} ${usuario.lastName}`;
+    nomeUsuario.classList.add("user-name");
+    divUsuario.appendChild(nomeUsuario);
+
+    let detalhesUsuario = document.createElement("p");
+    detalhesUsuario.textContent = `Gênero: ${usuario.gender}, Idade: ${usuario.age}, Email: ${usuario.email}`;
+    detalhesUsuario.classList.add("user-details");
+    divUsuario.appendChild(detalhesUsuario);
+
     listaUsuarios.appendChild(divUsuario);
   });
 }

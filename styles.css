@@ -1,10 +1,10 @@
 body {
+    font-family: 'Reddit Mono', monospace;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     background-color: #f5f5f5;
 }
 
@@ -46,4 +46,25 @@ input {
 
 input:focus {
     border-color: #007bff;
+}
+
+.user-container {
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-name {
+    font-weight: bold;
+    font-size: 18px;
+    color: #333333;
+    margin-bottom: 5px;
+}
+
+.user-details {
+    font-size: 16px;
+    color: #666666;
 }
